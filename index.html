@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Performance Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><i class="fas fa-chart-line"></i> Sports Dashboard</div>
+        <nav>
+            <a href="#"><i class="fas fa-home"></i> Home</a>
+            <a href="#"><i class="fas fa-running"></i> Athlete Performance</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Event Management</a>
+            <a href="#"><i class="fas fa-calendar-check"></i> Schedules</a>
+            <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="profile"><i class="fas fa-user-circle"></i> Profile</div>
+    </div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search events...">
+        <button onclick="searchEvents()">Search</button>
+    </div>
+    
+    <div class="main-container">
+        <div class="performance-overview panel">
+            <h3><i class="fas fa-chart-pie"></i> Performance Overview</h3>
+            <div class="overview-content">
+                <p><i class="fas fa-users"></i> Total Athletes: <strong>50</strong></p>
+                <p><i class="fas fa-trophy"></i> Average Score: <strong>85%</strong></p>
+                <p><i class="fas fa-star"></i> Top Performer: <strong>Jane Doe</strong></p>
+            </div>
+        </div>
+        
+        <div class="training-progress panel">
+            <h3><i class="fas fa-chart-line"></i> Training & Progress</h3>
+            <canvas id="trainingChart"></canvas>
+        </div>
+        
+        <div class="event-calendar panel">
+            <h3><i class="fas fa-calendar-day"></i> Upcoming Events</h3>
+            <ul>
+                <li><i class="fas fa-dumbbell"></i> Training Session - Nov 10, 2024</li>
+                <li><i class="fas fa-medal"></i> Competition - Nov 15, 2024</li>
+            </ul>
+        </div>
+        
+        <div class="live-tracker panel">
+            <h3><i class="fas fa-broadcast-tower"></i> Live Event Tracker</h3>
+            <p><i class="fas fa-info-circle"></i> No ongoing events currently.</p>
+        </div>
+        
+        <div class="notifications panel">
+            <h3><i class="fas fa-bell"></i> Alerts & Notifications</h3>
+            <ul>
+                <li><i class="fas fa-upload"></i> New training plan uploaded</li>
+                <li><i class="fas fa-calendar"></i> Event rescheduled for Nov 20, 2024</li>
+            </ul>
+        </div>
+    </div>
+    <div class="add-event panel">
+        <h3><i class="fas fa-plus-circle"></i> Add or Edit Event</h3>
+        <form id="eventForm">
+            <label for="eventTitle">Event Title:</label>
+            <input type="text" id="eventTitle" required placeholder="Enter event title">
+            
+            <label for="eventDate">Event Date:</label>
+            <input type="date" id="eventDate" required>
+    
+            <button type="submit">Add Event</button>
+            <button type="button" id="cancelEdit" style="display: none;">Cancel Edit</button>
+        </form>
+    </div>
+    
+        
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
