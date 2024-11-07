@@ -1,90 +1,118 @@
-// Chart.js code for the Training & Progress section
-document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('trainingChart').getContext('2d');
-    const trainingChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            datasets: [{
-                label: 'Performance Score',
-                data: [78, 82, 85, 90],
-                borderColor: '#1a73e8',
-                backgroundColor: 'rgba(26, 115, 232, 0.2)',
-                borderWidth: 2,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    beginAtZero: true
-                },
-                y: {
-                    min: 70,
-                    max: 100
-                }
-            }
-        }
-    });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    const eventForm = document.getElementById('eventForm');
-    const eventList = document.querySelector('.event-calendar ul');
-    let editEvent = null;
+let events = [];
+let editIndex = null;
 
-    eventForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const title = document.getElementById('eventTitle').value;
-        const date = document.getElementById('eventDate').value;
+document.getElementById('eventForm').addEventListener('submit', addEvent);
 
-        if (editEvent) {
-            // Update the existing event
-            editEvent.innerHTML = `<i class="fas fa-calendar-day"></i> ${title} - ${date} <button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button>`;
-            editEvent = null;
-            document.getElementById('cancelEdit').style.display = 'none';
-        } else {
-            // Add new event
-            const eventItem = document.createElement('li');
-            eventItem.innerHTML = `<i class="fas fa-calendar-day"></i> ${title} - ${date} <button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button>`;
-            eventList.appendChild(eventItem);
-        }
+function addEvent(e) {
+    e.preventDefault(); // Prevent form submission
 
-        // Clear form
-        eventForm.reset();
-    });
+    const eventTitle = document.getElementById('eventTitle').value;
+    const eventDate = document.getElementById('eventDate').value;
 
-    eventList.addEventListener('click', function (e) {
-        if (e.target.classList.contains('edit-btn')) {
-            // Edit event
-            editEvent = e.target.parentElement;
-            const [title, date] = editEvent.textContent.split(' - ');
-            document.getElementById('eventTitle').value = title.trim();
-            document.getElementById('eventDate').value = date.trim().split(' ')[0];
-            document.getElementById('cancelEdit').style.display = 'inline';
-        } else if (e.target.classList.contains('delete-btn')) {
-            // Delete event
-            e.target.parentElement.remove();
-        }
-    });
+    if (editIndex !== null) {
+        // Editing existing event
+        events[editIndex] = { title: eventTitle, date: eventDate };
+        editIndex = null;
+        document.getElementById('cancelEdit').style.display = 'none';
+    } else {
+        // Adding new event
+        events.push({ title: eventTitle, date: eventDate });
+    }
 
-    document.getElementById('cancelEdit').addEventListener('click', function () {
-        editEvent = null;
-        eventForm.reset();
-        this.style.display = 'none';
-    });
-});
-function searchEvents() {
-    const input = document.getElementById('searchInput').value.toLowerCase().trim();
-    const events = document.querySelectorAll('.event-calendar ul li');
+    document.getElementById('eventForm').reset();
+    renderEventList();
+}
 
-    events.forEach(event => {
-        if (event.textContent.toLowerCase().includes(input)) {
-            event.style.display = '';  // Show matching events
-        } else {
-            event.style.display = 'none';  // Hide non-matching events
-        }
+function renderEventList(filteredEvents = events) {
+    const eventList = document.getElementById('eventList');
+    eventList.innerHTML = ''; // Clear previous list items
+
+    filteredEvents.forEach((event, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <i class="fas fa-calendar-day"></i> ${event.title} - ${event.date}
+            <button onclick="editEvent(${index})">Edit</button>
+            <button onclick="deleteEvent(${index})">Delete</button>
+        `;
+        eventList.appendChild(li);
     });
 }
 
+function editEvent(index) {
+    editIndex = index;
+    const event = events[index];
+    document.getElementById('eventTitle').value = event.title;
+    document.getElementById('eventDate').value = event.date;
+    document.getElementById('cancelEdit').style.display = 'inline-block';
+}
 
+function deleteEvent(index) {
+    events.splice(index, 1);
+    renderEventList();
+}
+
+function cancelEdit() {
+    editIndex = null;
+    document.getElementById('eventForm').reset();
+    document.getElementById('cancelEdit').style.display = 'none';
+}
+
+function searchEvents() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const filteredEvents = events.filter(event => event.title.toLowerCase().includes(query));
+    renderEventList(filteredEvents);
+}
+
+function toggleMode() {
+    const mode = document.getElementById('mode').value;
+    if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
+    } else {
+        document.body.classList.add('light-mode');
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+// Wait for the DOM to load before running any scripts
+document.addEventListener('DOMContentLoaded', function () {
+    const eventForm = document.getElementById('eventForm');
+    const eventTitle = document.getElementById('eventTitle');
+    const eventDate = document.getElementById('eventDate');
+    const eventList = document.getElementById('eventList');
+    const cancelEditBtn = document.getElementById('cancelEdit');
+
+    // Render the initial event list if there are events
+    renderEventList();
+
+    // Event listener for form submission
+    eventForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        const title = eventTitle.value.trim();
+        const date = eventDate.value;
+
+        if (title && date) {
+            // Create a new list item for the event
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${title}</strong> on <em>${new Date(date).toLocaleDateString()}</em>`;
+            
+            // Append the new event to the event list
+            eventList.appendChild(li);
+
+            // Clear the form fields
+            eventTitle.value = '';
+            eventDate.value = '';
+
+            // Hide the "Cancel Edit" button
+            cancelEditBtn.style.display = 'none';
+        }
+    });
+
+    // Cancel edit (if applicable, this part could be expanded for editing events)
+    cancelEditBtn.addEventListener('click', function () {
+        eventTitle.value = '';
+        eventDate.value = '';
+        cancelEditBtn.style.display = 'none';
+    });
+});
